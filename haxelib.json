@@ -1,0 +1,11 @@
+{
+  "name": "texgen_hx",
+  "url" : "https://github.com/yanrishatum/texgen_hx/",
+  "license": "MIT",
+  "tags": ["cross", "image", "procedural", "texture", "utility", "generator", "multimedia"],
+  "description": "texgen.js port. Allows to create procedural textures.",
+  "version": "1.0.0",
+  "releasenote": "Initial port",
+  "contributors": ["Yanrishatum", "Everybody on original repo"],
+  "dependencies": {}
+}

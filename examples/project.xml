@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
+	
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="texgen_hx" package="texgenhx" version="1.0.0" company="Yanrishatum" />
+	
+	<!-- output -->
+	<app main="Main" file="texgenhx" path="bin" />
+	
+	<window background="#000000" fps="60" />
+	<window width="1280" height="768" unless="mobile" />
+	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
+	
+	<!-- classpath, haxe libs -->
+  <source path="../"/>
+	<source path="src" />
+	<haxelib name="openfl" />
+	
+	<!-- optimize output
+	<haxeflag name="-dce full" /> -->
+	
+</project>
