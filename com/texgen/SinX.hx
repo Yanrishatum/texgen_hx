@@ -1,5 +1,6 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
+import com.texgen.Color;
+import com.texgen.Buffer;
 
 class SinX extends Program
 {
@@ -24,8 +25,9 @@ class SinX extends Program
     return this;
   }
   
-  override public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float 
+  override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
-    return Math.sin((x + _offset) * _frequency);
+    color.setGray(Math.sin((x + _offset) * _frequency));
   }
+  
 }

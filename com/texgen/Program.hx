@@ -1,5 +1,4 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
 
 class Program
 {
@@ -8,7 +7,7 @@ class Program
   
   public function new() 
   {
-    _color = new Color(1, 1, 1);
+    _color = new Color();
   }
   
   public function color(r:Float, g:Float, b:Float):Program
@@ -24,9 +23,9 @@ class Program
     return _color;
   }
   
-  public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float
+  public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void
   {
-    return 1;
+    color.setGray(1);
   }
   
 }

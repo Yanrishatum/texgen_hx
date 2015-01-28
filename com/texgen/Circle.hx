@@ -1,5 +1,6 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
+import com.texgen.Color;
+import com.texgen.Buffer;
 import com.texgen.TG.XYPair;
 
 class Circle extends Program
@@ -36,9 +37,8 @@ class Circle extends Program
     return this;
   }
   
-  override public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float 
+  override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
-    var dist:Float = TGUtils.distance(x, y, _position.x, _position.y);
-    return TGUtils.smoothStep(_radius - _delta, _radius, dist);
+    color.setGray(1 - TGUtils.smoothStep(_radius - _delta, _radius, TGUtils.distance(x, y, _position.x, _position.y)));
   }
 }

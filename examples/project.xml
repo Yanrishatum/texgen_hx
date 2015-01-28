@@ -9,7 +9,7 @@
 	<app main="Main" file="texgenhx" path="bin" />
 	
 	<window background="#000000" fps="60" />
-	<window width="1280" height="768" unless="mobile" />
+	<window width="1280" height="1080" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->

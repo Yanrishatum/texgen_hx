@@ -1,5 +1,6 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
+import com.texgen.Color;
+import com.texgen.Buffer;
 import com.texgen.TG.XYPair;
 
 /**
@@ -23,11 +24,11 @@ class Pixelate extends Program
     return this;
   }
   
-  override public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float 
+  override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
     var s:Float = _size.x * Math.ffloor(x / _size.x);
     var t:Float = _size.y * Math.ffloor(y / _size.y);
-    
-    return TGUtils.getPixelNearest(input, s, t, 0, width);
+    color.set(input.getPixelNearest(s, t));
   }
+  
 }

@@ -1,5 +1,5 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
+import com.texgen.Color;
 import com.texgen.TG.XYPair;
 
 class CheckerBoard extends Program
@@ -37,8 +37,9 @@ class CheckerBoard extends Program
     return this;
   }
   
-  override public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float 
+  override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
-    return (( Std.int((y + _offset.y) / _size.y) & 1 ) ^ ( Std.int((x + _offset.x + Std.int(y / _size.y) * _rowShift) / _size.x) & 1)) != 0 ? 0 : 1;
+    color.setGray((( Std.int((y + _offset.y) / _size.y) & 1 ) ^ ( Std.int((x + _offset.x + Std.int(y / _size.y) * _rowShift) / _size.x) & 1)) != 0 ? 0 : 1);
   }
+  
 }

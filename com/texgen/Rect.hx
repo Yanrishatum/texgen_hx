@@ -1,5 +1,6 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
+import com.texgen.Color;
+import com.texgen.Buffer;
 import com.texgen.TG.XYPair;
 
 class Rect extends Program
@@ -29,9 +30,9 @@ class Rect extends Program
     return this;
   }
   
-  override public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float 
+  override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
-    return ( x >= _position.x && x <= (_position.x + _size.x) && y <= (_position.y + _size.y) && y >= _position.y) ? 1 : 0;
+    color.setGray(( x >= _position.x && x <= (_position.x + _size.x) && y <= (_position.y + _size.y) && y >= _position.y) ? 1 : 0);
   }
   
 }

@@ -1,5 +1,5 @@
 package com.texgen;
-import com.texgen.Texture.Float32Array;
+import com.texgen.Color;
 
 class Noise extends Program
 {
@@ -9,9 +9,9 @@ class Noise extends Program
     super();
   }
   
-  override public function process(output:Float32Array, input:Float32Array, width:Int, height:Int, x:Int, y:Int):Float 
+  override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
-    return Math.random();
+    color.setGray(Math.random());
   }
   
 }

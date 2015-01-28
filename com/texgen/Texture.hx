@@ -1,4 +1,5 @@
 package com.texgen;
+import com.texgen.Buffer.Float32Array;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 
@@ -7,66 +8,62 @@ import openfl.display.BitmapData;
 #end
 
 #if js
+
 import js.Browser;
 import js.html.CanvasRenderingContext2D;
 import js.html.ImageData;
 import js.html.Uint8ClampedArray;
 import js.html.CanvasElement;
-typedef Float32Array = js.html.Float32Array;
-#elseif flash
-typedef Float32Array = flash.Vector<Float>;
-/*
-// openfl/lime Float32Array is buggy on flash and cpp targets.
-#elseif openfl
-typedef Float32Array = openfl.utils.Float32Array;
-#elseif lime
-typedef Float32Array = lime.utils.Float32Array;
-*/
-#else
-typedef Float32Array = haxe.ds.Vector<Float>;
 #end
-// Support Float32Array for other frameworks and platforms (snow, horror, etc)?
+// Support Float32Array forplatforms, that allows use of Float32Array.
 
 class Texture
 {
 
-  @:readOnly
-  public var width:Int;
-  @:readOnly
-  public var height:Int;
+  public var width(default, null):Int;
+  public var height(default, null):Int;
   
-  @:readOnly
-  public var array:Float32Array;
-  public var arrayCopy:Float32Array;
+  private var array(default, null):Buffer;
+  private var arrayCopy:Buffer;
+  private var color:Color;
+  
   
   public function new(width:Int, height:Int) 
   {
     this.width = width;
     this.height = height;
     
-    this.array = new Float32Array(width * height * 4);
-    this.arrayCopy = new Float32Array(width * height * 4);
+    this.array = new Buffer(width, height);
+    this.arrayCopy = new Buffer(width, height);
+    this.color = new Color();
   }
   
   public function pass(program:Program, ?operation:Operation):Texture
   {
     if (operation == null) operation = Operation.None;
     
-    var color:Color = program.getColor();
+    var modulate:Color = program.getColor();
+    var array:Float32Array = this.array.array;
     
-    var x:Int = 0, y:Int = 0, i:Int = 0, il:Int = array.length, value:Float;
-    #if js
-    this.arrayCopy.set(this.array);
-    #elseif flash
-    // well...
-    for (j in 0...il) this.arrayCopy[j] = this.array[j];
-    #else
-    haxe.ds.Vector.blit(this.array, 0, this.arrayCopy, 0, il);
-    #end
+    var x:Int = 0, y:Int = 0, i:Int = 0, il:Int = array.length, color:Color = this.color;
     
+    this.arrayCopy.copy(this.array);
     
     // Large code insertion here, because JS version uses dynamic function generation
     TexGenMacro.createOptimizedFunction();
+    /*
+    
+    while (i < il)
+    {
+      program.process(this.array, arrayCopy, color, x, y, width, height);
+      array[i] ${operation}= color.r * modulate.r;
+      array[i] ${operation}= color.g * modulate.g;
+      array[i] ${operation}= color.b * modulate.b;
+      if (++x == width) { x = 0; y++; }
+      i += 4;
+    }
+    
+    */
     
     return this;
   }
@@ -106,11 +103,16 @@ class Texture
     return pass(program, Operation.Or);
   }
   
+  public function set(program:Program):Texture
+  {
+    return pass(program, Operation.None);
+  }
+  
   #if js
   
   public function toImageData(context:CanvasRenderingContext2D):ImageData
   {
-    var array:Float32Array = this.array;
+    var array:Float32Array = this.array.array;
     
     var imageData:ImageData = context.createImageData(this.width, this.height);
     var data:Uint8ClampedArray = imageData.data;
@@ -147,7 +149,7 @@ class Texture
   
   private inline function safeValue(index:Int):Float
   {
-    return TGUtils.clamp(array[index], 0, 1);
+    return TGUtils.clamp(array.array[index], 0, 1);
   }
   
   #if openfl
@@ -155,7 +157,7 @@ class Texture
   public function toBitmapData(transparent:Bool = true):BitmapData
   {
     var data:BitmapData = new BitmapData(this.width, this.height, transparent, 0);
-    var array:Float32Array = this.array;
+    var array:Float32Array = this.array.array;
     data.lock();
     var x:Int = 0, y:Int = 0, i:Int = 0, il:Int = array.length;
     if (transparent)
@@ -184,7 +186,7 @@ class Texture
   public function toBytesRGBA():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array;
+    var array:Float32Array = this.array.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)
@@ -201,7 +203,7 @@ class Texture
   public function toBytesBGRA():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array;
+    var array:Float32Array = this.array.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)
@@ -218,7 +220,7 @@ class Texture
   public function toBytesARGB():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array;
+    var array:Float32Array = this.array.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)
@@ -235,7 +237,7 @@ class Texture
   public function toBytesABGR():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array;
+    var array:Float32Array = this.array.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)

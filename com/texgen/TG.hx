@@ -55,21 +55,21 @@ class TG
   
   // Filters
   
-  public static function sineDisort():SineDisort
+  public static function sineDistort():SineDistort
   {
-    return new SineDisort();
+    return new SineDistort();
   }
   
   public static function twirl():Twirl
   {
     return new Twirl();
   }
-  /*
+  
   public static function pixelate():Pixelate
   {
     return new Pixelate();
   }
-  */
+  
   public static function transform():Transform
   {
     return new Transform();
