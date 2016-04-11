@@ -38,6 +38,31 @@ class TG
     return new Noise();
   }
   
+  public static function fractalNoise():FractalNoise
+  {
+    return new FractalNoise();
+  }
+  
+  public static function cellularNoise():CellularNoise
+  {
+    return new CellularNoise();
+  }
+  
+  public static function voronoiNoise():VoronoiNoise
+  {
+    return new VoronoiNoise();
+  }
+  
+  public static function cellularFractal():CellularFractal
+  {
+    return new CellularFractal();
+  }
+  
+  public static function voronoiFractal():VoronoiFractal
+  {
+    return new VoronoiFractal();
+  }
+  
   public static function checkerBoard():CheckerBoard
   {
     return new CheckerBoard();
@@ -53,6 +78,11 @@ class TG
     return new Circle();
   }
   
+  public static function putTexture(texture:Texture):PutTexture
+  {
+    return new PutTexture(texture);
+  }
+  
   // Filters
   
   public static function sineDistort():SineDistort
@@ -65,14 +95,34 @@ class TG
     return new Twirl();
   }
   
+  public static function transform():Transform
+  {
+    return new Transform();
+  }
+  
   public static function pixelate():Pixelate
   {
     return new Pixelate();
   }
   
-  public static function transform():Transform
+  public static function gradientMap():GradientMap
   {
-    return new Transform();
+    return new GradientMap();
+  }
+  
+  public static function normalize():Normalize
+  {
+    return new Normalize();
+  }
+  
+  public static function radialGradient():RadialGradient
+  {
+    return new RadialGradient();
+  }
+  
+  public static function linearGradient():LinearGradient
+  {
+    return new LinearGradient();
   }
   
 }

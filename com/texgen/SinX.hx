@@ -25,6 +25,11 @@ class SinX extends Program
     return this;
   }
   
+	var params = {
+		frequency: 1,
+		offset: 0
+	};
+  
   override public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void 
   {
     color.setGray(Math.sin((x + _offset) * _frequency));

@@ -56,8 +56,8 @@ class Buffer
   
   public function getPixelNearest(x:Float, y:Float):Color
   {
-    x = TGUtils.wrap(Math.round(x), width);
-    y = TGUtils.wrap(Math.round(y), height);
+    x = TGUtils.wrap(Math.round(x), 0, width);
+    y = TGUtils.wrap(Math.round(y), 0, height);
     this.color.read(this.array, (Std.int(y) * this.width + Std.int(x)) * 4);
     return this.color;
   }
@@ -70,8 +70,8 @@ class Buffer
   
   public function getPixelBilinear(x:Float, y:Float):Color
   {
-    x = TGUtils.wrap(x, width);
-    y = TGUtils.wrap(y, height);
+    x = TGUtils.wrap(x, 0, width);
+    y = TGUtils.wrap(y, 0, height);
     
     var px:Int = Math.floor(x);
     var py:Int = Math.floor(y);

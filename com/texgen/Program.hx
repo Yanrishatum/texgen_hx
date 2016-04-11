@@ -3,24 +3,22 @@ package com.texgen;
 class Program
 {
 
-  private var _color:Color;
+  private var _tint:Color;
   
   public function new() 
   {
-    _color = new Color();
+    _tint = new Color();
   }
   
-  public function color(r:Float, g:Float, b:Float):Program
+  public function tint(r:Float, g:Float, b:Float):Program
   {
-    _color.r = r;
-    _color.g = g;
-    _color.b = b;
+    _tint.setRGB(r, g, b);
     return this;
   }
   
-  public function getColor():Color
+  public function getTint():Color
   {
-    return _color;
+    return _tint;
   }
   
   public function process(output:Buffer, input:Buffer, color:Color, x:Int, y:Int, width:Int, height:Int):Void

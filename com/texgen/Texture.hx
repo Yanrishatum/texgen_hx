@@ -23,47 +23,63 @@ class Texture
   public var width(default, null):Int;
   public var height(default, null):Int;
   
-  private var array(default, null):Buffer;
-  private var arrayCopy:Buffer;
+  public var buffer(default, null):Buffer;
+  private var bufferCopy:Buffer;
   private var color:Color;
-  
+  private var tint:Color;
   
   public function new(width:Int, height:Int) 
   {
     this.width = width;
     this.height = height;
     
-    this.array = new Buffer(width, height);
-    this.arrayCopy = new Buffer(width, height);
+    this.buffer = new Buffer(width, height);
+    this.bufferCopy = new Buffer(width, height);
     this.color = new Color();
   }
   
   public function pass(program:Program, ?operation:Operation):Texture
   {
-    if (operation == null) operation = Operation.None;
+    if (operation == null) operation = Operation.Set;
     
-    var modulate:Color = program.getColor();
-    var array:Float32Array = this.array.array;
+    var dst:Buffer = this.buffer;
+    var src:Buffer = this.bufferCopy;
+    src.copy(dst);
     
-    var x:Int = 0, y:Int = 0, i:Int = 0, il:Int = array.length, color:Color = this.color;
+    var op:Float->Float->Float =
+    switch (operation)
+    {
+      case Operation.Custom(fn): fn;
+      case Operation.Add: opAdd;
+      case Operation.And: opAnd;
+      case Operation.Divide: opDiv;
+      case Operation.Max: opMax;
+      case Operation.Min: opMin;
+      case Operation.Multiply: opMul;
+      case Operation.Set: opSet;
+      case Operation.Or: opOr;
+      case Operation.Xor: opXor;
+      case Operation.Substract: opSub;
+    }
     
-    this.arrayCopy.copy(this.array);
+    var x:Int = 0;
+    var y:Int = 0;
+    var array = dst.array;
+    var width:Int = dst.width;
+    var height:Int = dst.height;
+    var tint:Color = program.getTint();
     
-    // Large code insertion here, because JS version uses dynamic function generation
-    TexGenMacro.createOptimizedFunction();
-    /*
-    
+    var i:Int = 0;
+    var il:Int = array.length;
     while (i < il)
     {
-      program.process(this.array, arrayCopy, color, x, y, width, height);
-      array[i] ${operation}= color.r * modulate.r;
-      array[i] ${operation}= color.g * modulate.g;
-      array[i] ${operation}= color.b * modulate.b;
+      program.process(dst, src, color, x, y, width, height);
+      array[i    ] = op(array[i    ], color.r * tint.r);
+      array[i + 1] = op(array[i + 1], color.g * tint.g);
+      array[i + 2] = op(array[i + 2], color.b * tint.b);
       if (++x == width) { x = 0; y++; }
       i += 4;
     }
-    
-    */
     
     return this;
   }
@@ -105,14 +121,36 @@ class Texture
   
   public function set(program:Program):Texture
   {
-    return pass(program, Operation.None);
+    return pass(program, Operation.Set);
   }
+  
+  public function min(program:Program):Texture
+  {
+    return pass(program, Operation.Min);
+  }
+  
+  public function max(program:Program):Texture
+  {
+    return pass(program, Operation.Max);
+  }
+  
+  // Built-in operations
+  private static function opAdd(a:Float, b:Float):Float { return a + b; }
+  private static function opSub(a:Float, b:Float):Float { return a - b; }
+  private static function opMul(a:Float, b:Float):Float { return a * b; }
+  private static function opDiv(a:Float, b:Float):Float { return a / b; }
+  private static function opAnd(a:Float, b:Float):Float { return Std.int(a) & Std.int(b); }
+  private static function opXor(a:Float, b:Float):Float { return Std.int(a) ^ Std.int(b); }
+  private static function opOr(a:Float, b:Float):Float { return Std.int(a) | Std.int(b); }
+  private static function opMin(a:Float, b:Float):Float { return a < b ? a : b; }
+  private static function opMax(a:Float, b:Float):Float { return a > b ? a : b; }
+  private static function opSet(a:Float, b:Float):Float { return b; }
   
   #if js
   
   public function toImageData(context:CanvasRenderingContext2D):ImageData
   {
-    var array:Float32Array = this.array.array;
+    var array:Float32Array = this.buffer.array;
     
     var imageData:ImageData = context.createImageData(this.width, this.height);
     var data:Uint8ClampedArray = imageData.data;
@@ -149,7 +187,7 @@ class Texture
   
   private inline function safeValue(index:Int):Float
   {
-    return TGUtils.clamp(array.array[index], 0, 1);
+    return TGUtils.clamp(buffer.array[index], 0, 1);
   }
   
   #if openfl
@@ -157,7 +195,7 @@ class Texture
   public function toBitmapData(transparent:Bool = true):BitmapData
   {
     var data:BitmapData = new BitmapData(this.width, this.height, transparent, 0);
-    var array:Float32Array = this.array.array;
+    var array:Float32Array = this.buffer.array;
     data.lock();
     var x:Int = 0, y:Int = 0, i:Int = 0, il:Int = array.length;
     if (transparent)
@@ -186,7 +224,7 @@ class Texture
   public function toBytesRGBA():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array.array;
+    var array:Float32Array = this.buffer.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)
@@ -203,7 +241,7 @@ class Texture
   public function toBytesBGRA():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array.array;
+    var array:Float32Array = this.buffer.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)
@@ -220,7 +258,7 @@ class Texture
   public function toBytesARGB():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array.array;
+    var array:Float32Array = this.buffer.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)
@@ -237,7 +275,7 @@ class Texture
   public function toBytesABGR():Bytes
   {
     var bytes:Bytes = Bytes.alloc(this.width * this.height * 4);
-    var array:Float32Array = this.array.array;
+    var array:Float32Array = this.buffer.array;
     
     var i:Int = 0, il:Int = array.length;
     while (i < il)

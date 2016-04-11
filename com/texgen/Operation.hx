@@ -1,15 +1,28 @@
 package com.texgen;
 
-@:enum abstract Operation(String)
+/** Operation type for passing. */
+enum Operation
 {
-
-  var Divide = "/";
-  var Add = "+";
-  var Substract = "-";
-  var Multiply = "*";
-  var Xor = "^";
-  var Or = "|";
-  var And = "&";
-  var None = "";
-  
+  /** A / B */
+  Divide;
+  /** A + B */
+  Add;
+  /** A - B */
+  Substract;
+  /** A * B */
+  Multiply;
+  /** A ^ B */
+  Xor;
+  /** A | B */
+  Or;
+  /** A & B */
+  And;
+  /** A > B ? A : B */
+  Max;
+  /** A < B ? A : B */
+  Min;
+  /** A = B. */
+  Set;
+  /** Custom operation function */
+  Custom(fn:Float->Float->Float);
 }
